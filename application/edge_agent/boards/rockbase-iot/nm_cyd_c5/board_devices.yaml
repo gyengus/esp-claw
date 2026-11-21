@@ -93,5 +93,5 @@ devices:
     version: default
     init_skip: true
     config:
-      boot_gpio_num: 0
+      boot_gpio_num: 28
       active_level: 0

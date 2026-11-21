@@ -14,7 +14,7 @@ ESP-Claw board package for the [RockBase-iot NM-CYD-C5](https://github.com/RockB
 | RGB LED | Single WS2812 pixel on GPIO27 |
 | GPS connector | LP-UART P5, intended for NM-ATGM336H style NMEA GPS modules |
 | Expansion | CN1 I2C header, P1 GPIO header, 12-pin FPC2 extension |
-| Button | BOOT button on GPIO0, active low |
+| Button | BOOT button on GPIO28, active low |
 
 ## GPIO Mapping
 
@@ -34,7 +34,7 @@ ESP-Claw board package for the [RockBase-iot NM-CYD-C5](https://github.com/RockB
 | GPS TX | GPIO5 |
 | I2C SDA | GPIO9 |
 | I2C SCL | GPIO8 |
-| BOOT | GPIO0 |
+| BOOT | GPIO28 |
 
 ## ESP-Claw Device Coverage
 
@@ -46,7 +46,7 @@ Defined in `board_devices.yaml`:
 - `fs_sdcard`: metadata-only SPI microSD entry on the shared SPI bus, CS=GPIO10. It is `init_skip: true` so mounting is explicit and does not block LCD use when no card is inserted.
 - `lcd_touch`: metadata-only XPT2046 entry, CS=GPIO1. The shared SPI wiring is reserved for future or custom touch drivers.
 - `gps_uart`: metadata-only NMEA UART entry, RX=GPIO4, TX=GPIO5, 9600 baud.
-- `buttons`: metadata-only BOOT button entry on GPIO0.
+- `buttons`: metadata-only BOOT button entry on GPIO28.
 
 The board also ships Lua helpers in the ESP-Claw FATFS image for screen display, backlight, RGB LED, and GPS usage. XPT2046 touch is reserved in metadata; scripts that need input should provide a BOOT-button fallback unless SPI touch support is enabled.
 
@@ -103,7 +103,7 @@ XPT2046 resistive touch on the shared SPI2 bus, CS=GPIO1. The device is reserved
 
 Expansion:
 
-WS2812 RGB LED on GPIO27, GPS UART on GPIO4/GPIO5, I2C header on GPIO9/GPIO8, BOOT button on GPIO0.
+WS2812 RGB LED on GPIO27, GPS UART on GPIO4/GPIO5, I2C header on GPIO9/GPIO8, BOOT button on GPIO28.
 
 Related
 
