@@ -105,8 +105,8 @@ static int nm_cyd_c5_lcd_touch_init(void *config, int cfg_size, void **device_ha
         },
         .flags = {
             .swap_xy = true,
-            .mirror_x = true,
-            .mirror_y = true,
+            .mirror_x = false,
+            .mirror_y = false,
         },
         .process_coordinates = nm_cyd_c5_touch_process_coords,
     };
