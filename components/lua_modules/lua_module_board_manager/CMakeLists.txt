@@ -6,4 +6,6 @@ idf_component_register(
     REQUIRES
         cap_lua
         espressif__esp_board_manager
+    PRIV_REQUIRES
+        esp_driver_ledc
 )

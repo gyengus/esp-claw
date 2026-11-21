@@ -10,6 +10,9 @@
 #include "sdkconfig.h"
 #include "esp_board_manager_includes.h"
 #include "cap_lua.h"
+#if CONFIG_ESP_BOARD_DEV_LEDC_CTRL_SUPPORT
+#include "driver/ledc.h"
+#endif
 
 #if CONFIG_LUA_MODULE_BOARD_MANAGER_DISPLAY_SHAPE_CIRCLE
 #define BM_DISPLAY_SHAPE         "circle"
@@ -86,12 +89,59 @@ static int lua_bm_get_display_shape(lua_State *L)
     return 1;
 }
 
+static int lua_bm_set_lcd_brightness(lua_State *L)
+{
+#if CONFIG_ESP_BOARD_DEV_LEDC_CTRL_SUPPORT
+    lua_Integer percent = luaL_checkinteger(L, 1);
+    if (percent < 0 || percent > 100) {
+        return push_err(L, ESP_ERR_INVALID_ARG, "set_lcd_brightness (expected 0..100)");
+    }
+
+    periph_ledc_handle_t *ledc_handle = NULL;
+    esp_err_t err = esp_board_manager_get_device_handle(ESP_BOARD_DEVICE_NAME_LCD_BRIGHTNESS,
+                                                        (void **)&ledc_handle);
+    if (err != ESP_OK || !ledc_handle) {
+        return push_err(L, err != ESP_OK ? err : ESP_ERR_NOT_FOUND, "set_lcd_brightness");
+    }
+
+    dev_ledc_ctrl_config_t *ctrl_cfg = NULL;
+    err = esp_board_manager_get_device_config(ESP_BOARD_DEVICE_NAME_LCD_BRIGHTNESS,
+                                              (void **)&ctrl_cfg);
+    if (err != ESP_OK || !ctrl_cfg || !ctrl_cfg->ledc_name) {
+        return push_err(L, err != ESP_OK ? err : ESP_ERR_NOT_FOUND, "set_lcd_brightness");
+    }
+
+    periph_ledc_config_t *ledc_config = NULL;
+    err = esp_board_periph_get_config(ctrl_cfg->ledc_name, (void **)&ledc_config);
+    if (err != ESP_OK || !ledc_config) {
+        return push_err(L, err != ESP_OK ? err : ESP_ERR_NOT_FOUND, "set_lcd_brightness");
+    }
+
+    uint32_t max_duty = (1u << (uint32_t)ledc_config->duty_resolution) - 1u;
+    uint32_t duty = ((uint32_t)percent * max_duty) / 100u;
+    err = ledc_set_duty(ledc_handle->speed_mode, ledc_handle->channel, duty);
+    if (err != ESP_OK) {
+        return push_err(L, err, "set_lcd_brightness");
+    }
+    err = ledc_update_duty(ledc_handle->speed_mode, ledc_handle->channel);
+    if (err != ESP_OK) {
+        return push_err(L, err, "set_lcd_brightness");
+    }
+
+    lua_pushboolean(L, 1);
+    return 1;
+#else
+    return push_err(L, ESP_ERR_NOT_SUPPORTED, "set_lcd_brightness");
+#endif
+}
+
 int luaopen_board_manager(lua_State *L)
 {
     static const luaL_Reg funcs[] = {
-        {"get_board_info",    lua_bm_get_board_info},
-        {"get_camera_paths",  lua_bm_get_camera_paths},
-        {"get_display_shape", lua_bm_get_display_shape},
+        {"get_board_info",     lua_bm_get_board_info},
+        {"get_camera_paths",   lua_bm_get_camera_paths},
+        {"get_display_shape",  lua_bm_get_display_shape},
+        {"set_lcd_brightness", lua_bm_set_lcd_brightness},
         {NULL, NULL},
     };
 

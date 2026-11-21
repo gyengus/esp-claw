@@ -7,6 +7,7 @@
 - `board_manager.get_board_info()` returns `{ name, chip, version, description, manufacturer }`.
 - `board_manager.get_camera_paths()` returns `{ dev_path, meta_path }`; `meta_path` may be absent.
 - `board_manager.get_display_shape()` returns `{ shape, corner_radius }`. `shape` is `rect`, `rounded_rect` or `circle`; `corner_radius` is in pixels and is `0` unless `shape` is `rounded_rect`.
+- `board_manager.set_lcd_brightness(percent)` sets the board LCD backlight brightness (`0..100`) and returns `true` on success or `nil, err` when unsupported/unavailable.
 
 All functions take no arguments. `get_board_info()` and `get_camera_paths()` return `nil, err` when the requested information is unavailable. Missing board metadata fields are returned as empty strings.
 
