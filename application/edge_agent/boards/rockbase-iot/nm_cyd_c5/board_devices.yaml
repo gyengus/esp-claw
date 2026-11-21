@@ -63,7 +63,13 @@ devices:
     chip: xpt2046
     type: custom
     version: default
-    init_skip: true
+    dependencies:
+      espressif/esp_lcd_touch:
+        version: "^1.1"
+        public: true
+      atanisoft/esp_lcd_touch_xpt2046:
+        version: "^1.0.6"
+        public: true
     config:
       cs_gpio_num: 1
       x_max: 320

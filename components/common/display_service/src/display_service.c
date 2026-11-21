@@ -642,7 +642,7 @@ static esp_err_t display_service_load_board_display(dev_display_lcd_config_t **o
 
 static void display_service_load_board_touch(void)
 {
-#if CONFIG_ESP_BOARD_DEV_LCD_TOUCH_SUPPORT
+#if CONFIG_ESP_BOARD_DEV_LCD_TOUCH_SUPPORT || defined(CONFIG_ESP_BOARD_DEV_CUSTOM_SUPPORT)
     void *touch_handle = NULL;
 
     if (esp_board_manager_get_device_handle(ESP_BOARD_DEVICE_NAME_LCD_TOUCH, &touch_handle) != ESP_OK) {
